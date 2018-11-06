@@ -10,35 +10,18 @@
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>rpc-core</artifactId>
+	<artifactId>rpc-test</artifactId>
 	<packaging>jar</packaging>
 	<version>${project.model.main.version}${maven.dependency.env}</version>
 
 	<dependencies>
 		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty-all</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>log4j-over-slf4j</artifactId>
+			<groupId>com.tiny.spot</groupId>
+			<artifactId>rpc-server</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.tiny.spot</groupId>
-			<artifactId>rpc-common</artifactId>
+			<artifactId>rpc-client</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>io.protostuff</groupId>
-			<artifactId>protostuff-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.protostuff</groupId>
-			<artifactId>protostuff-runtime</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.objenesis</groupId>
-			<artifactId>objenesis</artifactId>
-		</dependency>
-
 	</dependencies>
 </project>
