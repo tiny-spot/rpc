@@ -5,7 +5,7 @@ import com.tiny.spot.server.RpcServer;
 public class RpcServerTest {
 	public static void main(String[] args) {
 		RpcServer rpcServer = new RpcServer(8891);
-		rpcServer.start();
+		rpcServer.start("applicationContext.xml");
 		while (!rpcServer.isAlive()) {
 			try {
 				Thread.sleep(200);

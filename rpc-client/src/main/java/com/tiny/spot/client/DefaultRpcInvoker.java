@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import com.tiny.spot.common.RpcException;
 import com.tiny.spot.common.RpcResponse;
 
 public final class DefaultRpcInvoker implements Serializable {
@@ -39,7 +40,7 @@ public final class DefaultRpcInvoker implements Serializable {
 			this.latch.await(timeout, unit);
 			return rpcResponse;
 		} catch (Throwable e) {
-			throw new RuntimeException(e);
+			throw new RpcException(e);
 		} finally {
 			InvokerMaps.remove(this.requestId);
 		}

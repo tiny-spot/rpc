@@ -24,7 +24,8 @@ public class RpcClient {
 	private static Map<String, Channel> ConnectionManager = new HashMap<>();
 	private static final String CodeSeperator = ":";
 
-	private RpcClient() {}
+	private RpcClient() {
+	}
 
 	public static synchronized Channel connect(RemoteAddress remoteAddress) {
 		String address = remoteAddress.getHost() + CodeSeperator + remoteAddress.getPort();
@@ -34,7 +35,6 @@ public class RpcClient {
 				return channel;
 			}
 		}
-		
 		Bootstrap bootstrap = new Bootstrap();
 		EventLoopGroup group = new NioEventLoopGroup();
 		bootstrap.group(group).channel(NioSocketChannel.class).handler(new ChannelInitializer<SocketChannel>() {
