@@ -23,10 +23,10 @@ public class RpcServer {
 	private ExecutorService executorService = Executors.newFixedThreadPool(1);
 	private volatile AtomicBoolean startUp = new AtomicBoolean(false);
 	private int port;
-	private SpringContainer springContainer; 
+	private SpringContainer springContainer;
 	private NioEventLoopGroup bossGroup = null;
 	private NioEventLoopGroup workerGroup = null;
-	
+
 	public RpcServer(int port) {
 		super();
 		this.port = port;
@@ -40,11 +40,11 @@ public class RpcServer {
 			@Override
 			public void run() {
 				bossGroup = new NioEventLoopGroup();
-				workerGroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors() * 2);
+				workerGroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors());
 				try {
 					springContainer = new SpringContainer(configLocation);
 					springContainer.init();
-					
+
 					ServerBootstrap serverBootstrap = new ServerBootstrap();
 					serverBootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
 							.option(ChannelOption.SO_TIMEOUT, 100).option(ChannelOption.SO_BACKLOG, 128)
@@ -53,7 +53,8 @@ public class RpcServer {
 							.childHandler(new ChannelInitializer<SocketChannel>() {
 								@Override
 								protected void initChannel(SocketChannel ch) throws Exception {
-									ch.pipeline().addLast(new NettyDecoder(RpcRequest.class, ProtostuffSerializer.INSTANCE))
+									ch.pipeline()
+											.addLast(new NettyDecoder(RpcRequest.class, ProtostuffSerializer.INSTANCE))
 											.addLast(new NettyEncoder(RpcResponse.class, ProtostuffSerializer.INSTANCE))
 											.addLast(new RpcServerHandler(springContainer));
 								}
@@ -69,12 +70,12 @@ public class RpcServer {
 			}
 		});
 	}
-	
+
 	public void shutdown() {
 		bossGroup.shutdownGracefully();
 		workerGroup.shutdownGracefully();
 	}
-	
+
 	public boolean isAlive() {
 		return startUp.get();
 	}

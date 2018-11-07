@@ -1,5 +1,11 @@
 package com.tiny.spot.server;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean;
+
 import com.tiny.spot.common.RpcRequest;
 import com.tiny.spot.common.RpcResponse;
 
@@ -10,6 +16,10 @@ import io.netty.util.ReferenceCountUtil;
 public class RpcServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
 	private SpringContainer springContainer;
+	private static int CPUCORES = Runtime.getRuntime().availableProcessors();
+	private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(CPUCORES, CPUCORES * 2, 60, TimeUnit.SECONDS,
+			new ArrayBlockingQueue<>(CPUCORES * 1000), new ThreadPoolExecutorFactoryBean(),
+			new ThreadPoolExecutor.DiscardPolicy());
 
 	public RpcServerHandler() {
 		super();
@@ -26,19 +36,23 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, RpcRequest rpcRequest) throws Exception {
-		try {
-			RpcResponse rpcResponse = new RpcResponse();
-			rpcResponse.setRequestId(rpcRequest.getRequestId());
-			try {
-				Thread.sleep(10000);
-				rpcResponse.setResult(springContainer.invoker(rpcRequest));
-			} catch (Throwable e) {
-				rpcResponse.setErrorMsg(e.getMessage());
+		threadPoolExecutor.execute(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					RpcResponse rpcResponse = new RpcResponse();
+					rpcResponse.setRequestId(rpcRequest.getRequestId());
+					try {
+						rpcResponse.setResult(springContainer.invoker(rpcRequest));
+					} catch (Throwable e) {
+						rpcResponse.setErrorMsg(e.getMessage());
+					}
+					ctx.writeAndFlush(rpcResponse);
+				} finally {
+					ReferenceCountUtil.release(rpcRequest);
+				}
 			}
-			ctx.writeAndFlush(rpcResponse);
-		} finally {
-			ReferenceCountUtil.release(rpcRequest);
-		}
+		});
 	}
 
 }
