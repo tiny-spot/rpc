@@ -14,7 +14,8 @@ public class RpcClientTest {
 		RemoteAddress remoteAddress = new RemoteAddress("127.0.0.1", 8891);
 		remoteAddresses.add(remoteAddress);
 		HelloService helloService = ProxyClient.proxyClass(HelloService.class, remoteAddresses);
-		System.out.println("client invoker:" + helloService.sayHai("fuck"));
+		helloService.sayHai("good");
+		helloService.sayHai("world");
 	}
 
 }

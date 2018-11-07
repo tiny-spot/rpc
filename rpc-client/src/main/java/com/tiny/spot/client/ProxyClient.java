@@ -30,8 +30,7 @@ public class ProxyClient {
 						rpcRequest.setParameters(args);
 						rpcRequest.setParameterTypes(method.getParameterTypes());
 						rpcRequest.setRequestId(idWorker.nextId());
-						DefaultRouterStrategy defaultRouterStrategy = new DefaultRouterStrategy();
-						Channel channel = RpcClient.connect(defaultRouterStrategy.route(remoteAddresses));
+						Channel channel = RpcClient.connect(DefaultRouterStrategy.INSTANCE.route(remoteAddresses));
 						channel.writeAndFlush(rpcRequest);
 						RpcResponse rpcResponse = DefaultRpcInvoker.putRpcRequest(rpcRequest.getRequestId()).wait(5,
 								TimeUnit.SECONDS);

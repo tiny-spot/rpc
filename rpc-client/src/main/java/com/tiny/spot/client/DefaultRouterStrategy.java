@@ -9,6 +9,8 @@ public class DefaultRouterStrategy implements RouterStrategy {
 
 	private AtomicInteger currIndex = new AtomicInteger(0);
 	
+	public static DefaultRouterStrategy INSTANCE = new DefaultRouterStrategy();
+	
 	@Override
 	public RemoteAddress route(List<RemoteAddress> remoteAddress) {
 		return remoteAddress.get(currIndex.incrementAndGet() % remoteAddress.size());
